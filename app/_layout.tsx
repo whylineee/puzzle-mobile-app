@@ -11,8 +11,7 @@ export default function RootLayout() {
           animation: 'fade',
         }}>
         <Stack.Screen name="index" />
-        <Stack.Screen name="explore" />
-        <Stack.Screen name="details" />
+        <Stack.Screen name="game" />
       </Stack>
       <StatusBar style="light" />
     </>

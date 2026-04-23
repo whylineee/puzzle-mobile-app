@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { Animated, Easing, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
-import { getSavedPlaces } from '@/constants/travel-data';
+import { getSavedPlaces, resolveImageSource } from '@/constants/travel-data';
 
 const savedPlaces = getSavedPlaces();
 
@@ -62,7 +62,7 @@ export default function SavedScreen() {
               style={styles.placeCard}
               onPress={() => router.push({ pathname: '/details', params: { slug: place.slug } })}
             >
-              <Image source={{ uri: place.image }} style={styles.placeImage} />
+              <Image source={resolveImageSource(place.image)} style={styles.placeImage} />
               <View style={styles.placeCopy}>
                 <Text style={styles.placeTitle}>{place.title}</Text>
                 <Text style={styles.placeMeta}>

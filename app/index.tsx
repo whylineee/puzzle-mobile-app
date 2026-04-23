@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { Animated, Easing, ImageBackground, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '@/constants/theme';
-import { HERO_IMAGE } from '@/constants/travel-data';
+import { HERO_IMAGE, resolveImageSource } from '@/constants/travel-data';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -54,7 +54,7 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screen}>
-        <ImageBackground source={{ uri: HERO_IMAGE }} style={styles.hero} imageStyle={styles.heroImage}>
+        <ImageBackground source={resolveImageSource(HERO_IMAGE)} style={styles.hero} imageStyle={styles.heroImage}>
           <View style={styles.overlay} />
           <View style={styles.glow} />
 

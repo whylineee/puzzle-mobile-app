@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'expo-router';
 import { Animated, Easing, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
 import { PROFILE_DATA } from '@/constants/travel-data';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const topReveal = useRef(new Animated.Value(0)).current;
   const cardsReveal = useRef(new Animated.Value(0)).current;
 
@@ -87,7 +89,7 @@ export default function ProfileScreen() {
           <View style={styles.panel}>
             <Text style={styles.panelLabel}>Нотатка від Puzzle</Text>
             <Text style={styles.panelText}>Тобі добре підійдуть камерні маршрути: Чернівці, Львів, Камʼянець та ранкова Одеса поза піком сезону.</Text>
-            <Pressable style={styles.panelButton}>
+            <Pressable style={styles.panelButton} onPress={() => router.push('/collections')}>
               <Text style={styles.panelButtonText}>Оновити добірки</Text>
             </Pressable>
           </View>

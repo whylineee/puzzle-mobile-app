@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
+  Alert,
   Animated,
   Easing,
   Image,
+  Linking,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -12,7 +14,7 @@ import {
   View,
 } from 'react-native';
 import { Feather, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { getPlaceBySlug } from '@/constants/travel-data';
+import { getPlaceBySlug, resolveImageSource } from '@/constants/travel-data';
 
 function FacilityIcon({ kind }: { kind: string }) {
   if (kind === 'coffee') {
@@ -87,12 +89,23 @@ export default function DetailsScreen() {
     ],
   });
 
+  const openMap = async () => {
+    const query = encodeURIComponent(`${place.title}, ${place.city}, ${place.region}`);
+    const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+      return;
+    }
+    Alert.alert('Не вдалося відкрити мапу', 'Спробуй ще раз або перевір підключення до інтернету.');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Animated.View style={revealStyle(heroReveal, 12)}>
           <View style={styles.heroCard}>
-            <Image source={{ uri: place.image }} style={styles.heroImage} />
+            <Image source={resolveImageSource(place.image)} style={styles.heroImage} />
             <Pressable style={styles.backButton} onPress={() => router.back()}>
               <Feather name="chevron-left" size={24} color="#aab3be" />
             </Pressable>
@@ -105,7 +118,9 @@ export default function DetailsScreen() {
         <Animated.View style={revealStyle(contentReveal, 20)}>
           <View style={styles.titleRow}>
             <Text style={styles.title}>{place.title}</Text>
-            <Text style={styles.mapLink}>На мапі</Text>
+            <Pressable onPress={openMap} hitSlop={8}>
+              <Text style={styles.mapLink}>На мапі</Text>
+            </Pressable>
           </View>
 
           <View style={styles.ratingRow}>
@@ -139,6 +154,21 @@ export default function DetailsScreen() {
             <Text style={styles.storyLabel}>Коротко про маршрут</Text>
             <Text style={styles.storyText}>{place.excerpt}</Text>
           </View>
+
+          {place.gallery?.length ? (
+            <View style={styles.galleryBlock}>
+              <Text style={styles.galleryLabel}>Ще фото локації</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.galleryRow}>
+                {place.gallery.map((image, index) => (
+                  <Image
+                    key={`${place.slug}-gallery-${index}`}
+                    source={resolveImageSource(image)}
+                    style={styles.galleryImage}
+                  />
+                ))}
+              </ScrollView>
+            </View>
+          ) : null}
         </Animated.View>
       </ScrollView>
 
@@ -147,7 +177,11 @@ export default function DetailsScreen() {
           <Text style={styles.priceLabel}>Орієнтовний бюджет</Text>
           <Text style={styles.price}>{place.price}</Text>
         </View>
-        <Pressable style={styles.bookButton}>
+        <Pressable
+          style={styles.bookButton}
+          onPress={() => router.push({ pathname: '/collections' })}
+          accessibilityRole="button"
+        >
           <Text style={styles.bookButtonText}>Спланувати</Text>
           <Ionicons name="arrow-forward" size={22} color="#ffffff" />
         </Pressable>
@@ -298,6 +332,24 @@ const styles = StyleSheet.create({
     color: '#445261',
     fontSize: 15,
     lineHeight: 23,
+  },
+  galleryBlock: {
+    marginTop: 8,
+    gap: 10,
+  },
+  galleryLabel: {
+    color: '#252b34',
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  galleryRow: {
+    gap: 12,
+    paddingRight: 8,
+  },
+  galleryImage: {
+    width: 240,
+    height: 150,
+    borderRadius: 20,
   },
   footer: {
     position: 'absolute',

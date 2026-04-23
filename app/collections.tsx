@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { Animated, Easing, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
-import { UKRAINE_COLLECTIONS, UKRAINE_PLACES } from '@/constants/travel-data';
+import { resolveImageSource, UKRAINE_COLLECTIONS, UKRAINE_PLACES } from '@/constants/travel-data';
 
 export default function CollectionsScreen() {
   const router = useRouter();
@@ -57,7 +57,7 @@ export default function CollectionsScreen() {
 
         <Animated.View style={revealStyle(listReveal, 20)}>
           <View style={styles.featuredCard}>
-            <Image source={{ uri: UKRAINE_COLLECTIONS[0].image }} style={styles.featuredImage} />
+            <Image source={resolveImageSource(UKRAINE_COLLECTIONS[0].image)} style={styles.featuredImage} />
             <View style={styles.featuredOverlay} />
             <View style={styles.featuredCopy}>
               <Text style={styles.featuredMood}>{UKRAINE_COLLECTIONS[0].mood}</Text>

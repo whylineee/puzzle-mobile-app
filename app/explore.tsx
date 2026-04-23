@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import {
   Animated,
@@ -14,12 +14,14 @@ import {
 } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { BottomNav } from '@/components/bottom-nav';
-import { UKRAINE_CITIES, UKRAINE_COLLECTIONS, UKRAINE_PLACES } from '@/constants/travel-data';
+import { resolveImageSource, UKRAINE_CITIES, UKRAINE_COLLECTIONS, UKRAINE_PLACES } from '@/constants/travel-data';
 
 const categories = ['Усі', 'Міста', 'Природа', 'Кава', 'Вікенд'];
 
 export default function ExploreScreen() {
   const router = useRouter();
+  const [query, setQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
   const topReveal = useRef(new Animated.Value(0)).current;
   const cardsReveal = useRef(new Animated.Value(0)).current;
   const collectionsReveal = useRef(new Animated.Value(0)).current;
@@ -65,6 +67,50 @@ export default function ExploreScreen() {
     ],
   });
 
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filteredCities = useMemo(() => {
+    if (!normalizedQuery) {
+      return UKRAINE_CITIES;
+    }
+
+    return UKRAINE_CITIES.filter((city) =>
+      `${city.name} ${city.region} ${city.tagline} ${city.vibe}`.toLowerCase().includes(normalizedQuery),
+    );
+  }, [normalizedQuery]);
+
+  const filteredPlaces = useMemo(() => {
+    const byCategory = UKRAINE_PLACES.filter((place) => {
+      if (activeCategory === 'Усі') {
+        return true;
+      }
+      if (activeCategory === 'Кава') {
+        return place.tags.some((tag) => tag.toLowerCase().includes('кава')) || place.category.toLowerCase().includes('кава');
+      }
+      if (activeCategory === 'Природа') {
+        return (
+          place.category.toLowerCase().includes('море') ||
+          place.category.toLowerCase().includes('природ') ||
+          place.tags.some((tag) => tag.toLowerCase().includes('природ') || tag.toLowerCase().includes('море'))
+        );
+      }
+      if (activeCategory === 'Вікенд') {
+        return place.duration.toLowerCase().includes('день');
+      }
+      return true;
+    });
+
+    if (!normalizedQuery) {
+      return byCategory;
+    }
+
+    return byCategory.filter((place) =>
+      `${place.title} ${place.city} ${place.region} ${place.category} ${place.tags.join(' ')} ${place.excerpt}`
+        .toLowerCase()
+        .includes(normalizedQuery),
+    );
+  }, [activeCategory, normalizedQuery]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -87,14 +133,20 @@ export default function ExploreScreen() {
               placeholder="Шукати міста та місця"
               placeholderTextColor="#b4bfcd"
               style={styles.searchInput}
+              value={query}
+              onChangeText={setQuery}
             />
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsRow}>
             {categories.map((category, index) => (
-              <View key={category} style={[styles.tabPill, index === 0 && styles.activeTabPill]}>
-                <Text style={[styles.tabText, index === 0 && styles.activeTabText]}>{category}</Text>
-              </View>
+              <Pressable
+                key={category}
+                style={[styles.tabPill, activeCategory === category && styles.activeTabPill]}
+                onPress={() => setActiveCategory(category)}
+              >
+                <Text style={[styles.tabText, activeCategory === category && styles.activeTabText]}>{category}</Text>
+              </Pressable>
             ))}
           </ScrollView>
         </Animated.View>
@@ -102,13 +154,15 @@ export default function ExploreScreen() {
         <Animated.View style={revealStyle(cardsReveal, 18)}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Міста</Text>
-            <Text style={styles.sectionAction}>Підібрати місто</Text>
+            <Pressable onPress={() => setActiveCategory('Міста')}>
+              <Text style={styles.sectionAction}>Підібрати місто</Text>
+            </Pressable>
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cityRow}>
-            {UKRAINE_CITIES.map((city) => (
+            {filteredCities.map((city) => (
               <View key={city.slug} style={styles.cityCard}>
-                <Image source={{ uri: city.image }} style={styles.cityImage} />
+                <Image source={resolveImageSource(city.image)} style={styles.cityImage} />
                 <View style={styles.cityOverlay} />
                 <Text style={styles.cityName}>{city.name}</Text>
                 <Text style={styles.cityTagline}>{city.tagline}</Text>
@@ -118,21 +172,34 @@ export default function ExploreScreen() {
                 </View>
               </View>
             ))}
+            {!filteredCities.length ? (
+              <View style={styles.emptyStateCard}>
+                <Text style={styles.emptyStateTitle}>Нічого не знайдено</Text>
+                <Text style={styles.emptyStateText}>Спробуй інший запит або очисти пошук.</Text>
+              </View>
+            ) : null}
           </ScrollView>
 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Цікаві локації</Text>
-            <Text style={styles.sectionAction}>Дивитися все</Text>
+            <Pressable
+              onPress={() => {
+                setActiveCategory('Усі');
+                setQuery('');
+              }}
+            >
+              <Text style={styles.sectionAction}>Дивитися все</Text>
+            </Pressable>
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.placeRow}>
-            {UKRAINE_PLACES.map((place) => (
+            {filteredPlaces.map((place) => (
               <Pressable
                 key={place.slug}
                 style={styles.placeCard}
                 onPress={() => router.push({ pathname: '/details', params: { slug: place.slug } })}
               >
-                <Image source={{ uri: place.image }} style={styles.placeImage} />
+                <Image source={resolveImageSource(place.image)} style={styles.placeImage} />
                 <View style={styles.ratingBadge}>
                   <Ionicons name="star" size={14} color="#f7c552" />
                   <Text style={styles.ratingText}>{place.rating}</Text>
@@ -145,6 +212,12 @@ export default function ExploreScreen() {
                 </View>
               </Pressable>
             ))}
+            {!filteredPlaces.length ? (
+              <View style={styles.emptyStateCard}>
+                <Text style={styles.emptyStateTitle}>Локацій не знайдено</Text>
+                <Text style={styles.emptyStateText}>Зміни категорію або введи інший запит.</Text>
+              </View>
+            ) : null}
           </ScrollView>
         </Animated.View>
 
@@ -159,7 +232,10 @@ export default function ExploreScreen() {
           <View style={styles.collectionsList}>
             {UKRAINE_COLLECTIONS.slice(0, 2).map((collection) => (
               <View key={collection.slug} style={styles.collectionCard}>
-                <Image source={{ uri: collection.image }} style={styles.collectionImage} />
+                <Image
+                  source={resolveImageSource(collection.image)}
+                  style={styles.collectionImage}
+                />
                 <View style={styles.collectionCopy}>
                   <Text style={styles.collectionMood}>{collection.mood}</Text>
                   <Text style={styles.collectionTitle}>{collection.title}</Text>
@@ -402,5 +478,24 @@ const styles = StyleSheet.create({
   collectionStops: {
     color: '#8f98a4',
     fontSize: 13,
+  },
+  emptyStateCard: {
+    width: 230,
+    minHeight: 150,
+    borderRadius: 24,
+    backgroundColor: '#f2f6fc',
+    padding: 16,
+    justifyContent: 'center',
+    gap: 6,
+  },
+  emptyStateTitle: {
+    color: '#1f2630',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  emptyStateText: {
+    color: '#7d8794',
+    fontSize: 13,
+    lineHeight: 19,
   },
 });

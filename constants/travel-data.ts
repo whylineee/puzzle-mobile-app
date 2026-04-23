@@ -1,3 +1,5 @@
+import type { ImageSourcePropType } from 'react-native';
+
 export type FacilityKind = 'coffee' | 'view' | 'food' | 'stay' | 'museum' | 'car';
 
 export type Facility = {
@@ -11,7 +13,7 @@ export type City = {
   name: string;
   region: string;
   tagline: string;
-  image: string;
+  image: string | ImageSourcePropType;
   stay: string;
   vibe: string;
 };
@@ -22,7 +24,8 @@ export type Place = {
   city: string;
   region: string;
   category: string;
-  image: string;
+  image: string | ImageSourcePropType;
+  gallery?: Array<string | ImageSourcePropType>;
   rating: string;
   price: string;
   duration: string;
@@ -36,14 +39,13 @@ export type Collection = {
   slug: string;
   title: string;
   description: string;
-  image: string;
+  image: string | ImageSourcePropType;
   duration: string;
   mood: string;
   stops: string[];
 };
 
-export const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80';
+export const HERO_IMAGE: string | ImageSourcePropType = require('../assets/images/cities/kyiv.jpg');
 
 export const UKRAINE_CITIES: City[] = [
   {
@@ -51,8 +53,7 @@ export const UKRAINE_CITIES: City[] = [
     name: 'Київ',
     region: 'Центр України',
     tagline: 'Куполи, дворики Подолу та довгі прогулянки над Дніпром.',
-    image:
-      'https://images.unsplash.com/photo-1544989164-31cb4ae6c25a?auto=format&fit=crop&w=1200&q=80',
+    image: require('../assets/images/cities/kyiv.jpg'),
     stay: '2-3 дні',
     vibe: 'місто / архітектура',
   },
@@ -61,8 +62,7 @@ export const UKRAINE_CITIES: City[] = [
     name: 'Львів',
     region: 'Галичина',
     tagline: 'Кава, камʼяні фасади та маршрути для неспішних вихідних.',
-    image:
-      'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1200&q=80',
+    image: require('../assets/images/cities/lviv.jpg'),
     stay: '2 дні',
     vibe: 'кава / історія',
   },
@@ -71,8 +71,7 @@ export const UKRAINE_CITIES: City[] = [
     name: 'Одеса',
     region: 'Південь',
     tagline: 'Море, ранкове світло на бульварі й легкий ритм літа.',
-    image:
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    image: require('../assets/images/cities/odesa.jpg'),
     stay: '2-4 дні',
     vibe: 'море / гастро',
   },
@@ -81,18 +80,34 @@ export const UKRAINE_CITIES: City[] = [
     name: 'Чернівці',
     region: 'Буковина',
     tagline: 'Європейський настрій, університет і камерні вулиці.',
-    image:
-      'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1200&q=80',
+    image: require('../assets/images/cities/chernivtsi.jpg'),
     stay: '1-2 дні',
     vibe: 'архітектура / тиша',
+  },
+  {
+    slug: 'drohobych',
+    name: 'Дрогобич',
+    region: 'Львівська область',
+    tagline: 'Ратуша, історичний центр і найдавніша солеварня України.',
+    image: require('../assets/images/drohobych-ratusha-square.png'),
+    stay: '1-2 дні',
+    vibe: 'історія / солеварня',
+  },
+  {
+    slug: 'truskavets',
+    name: 'Трускавець',
+    region: 'Львівська область',
+    tagline: 'Курортне місто з бюветами, парком і неспішним ритмом відпочинку.',
+    image: require('../assets/images/cities/truskavets.jpg'),
+    stay: '2-3 дні',
+    vibe: 'курорт / бювет',
   },
   {
     slug: 'kamianets',
     name: 'Камʼянець',
     region: 'Поділля',
     tagline: 'Фортеця, каньйон і той самий вау-ефект із першого кадру.',
-    image:
-      'https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?auto=format&fit=crop&w=1200&q=80',
+    image: require('../assets/images/cities/kamianets.jpg'),
     stay: '1-2 дні',
     vibe: 'фортеця / каньйон',
   },
@@ -141,6 +156,57 @@ export const UKRAINE_PLACES: Place[] = [
       { id: 'food', label: 'Локальна кухня', kind: 'food' },
       { id: 'view', label: 'Оглядовий дах', kind: 'view' },
       { id: 'stay', label: 'Бутік-готелі', kind: 'stay' },
+    ],
+  },
+  {
+    slug: 'drogobych-saltworks',
+    title: 'Дрогобицька солеварня',
+    city: 'Дрогобич',
+    region: 'Львівська область',
+    category: 'Історія',
+    image: require('../assets/images/drohobych-saltworks-exterior.png'),
+    rating: '4.9',
+    price: 'від 590 грн',
+    duration: '3-5 год',
+    excerpt: 'Жива промислова спадщина: соляні цехи, старі печі та автентичний дух Галичини.',
+    description:
+      'Один із найатмосферніших маршрутів Львівщини: історичний центр Дрогобича, Ратуша та знайомство з легендарною солеварнею, яка працює ще з княжих часів. Це локація, де добре відчувається місцева історія, ремесло й характер міста.',
+    tags: ['Дрогобич', 'Солеварня', 'Львівщина'],
+    facilities: [
+      { id: 'museum', label: 'Екскурсія цехами', kind: 'museum' },
+      { id: 'view', label: 'Історичний центр', kind: 'view' },
+      { id: 'coffee', label: 'Кавові точки', kind: 'coffee' },
+      { id: 'car', label: 'Трансфер 10 хв', kind: 'car' },
+    ],
+    gallery: [
+      require('../assets/images/drohobych-ratusha-square.png'),
+      require('../assets/images/drohobych-saltworks-inside.png'),
+    ],
+  },
+  {
+    slug: 'truskavets-buvet',
+    title: 'Бювет мінеральних вод',
+    city: 'Трускавець',
+    region: 'Львівська область',
+    category: 'Курорт',
+    image:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Truskavets_Buvet.jpg/1280px-Truskavets_Buvet.jpg',
+    rating: '4.8',
+    price: 'від 520 грн',
+    duration: '1 день',
+    excerpt: 'Символ Трускавця: бювет, прогулянки курортним парком і мінеральна вода «Нафтуся».',
+    description:
+      'Трускавець - класичний курорт Львівщини, де головний ритм задають бювети мінеральних вод, тиша парку та неквапливі прогулянки. Маршрут добре підходить для відновлення, короткого вікенду й знайомства з оздоровчою традицією міста.',
+    tags: ['Трускавець', 'Бювет', 'Львівщина'],
+    facilities: [
+      { id: 'view', label: 'Курортний парк', kind: 'view' },
+      { id: 'food', label: 'Кафе поруч', kind: 'food' },
+      { id: 'stay', label: 'Санаторії', kind: 'stay' },
+      { id: 'car', label: 'Трансфер 10 хв', kind: 'car' },
+    ],
+    gallery: [
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Truskavets_city_center.jpg/1280px-Truskavets_city_center.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Truskavets_resort_park.jpg/1280px-Truskavets_resort_park.jpg',
     ],
   },
   {
@@ -262,4 +328,8 @@ export function getPlaceBySlug(slug?: string) {
 
 export function getSavedPlaces() {
   return SAVED_PLACE_SLUGS.map((slug) => getPlaceBySlug(slug));
+}
+
+export function resolveImageSource(image: string | ImageSourcePropType) {
+  return typeof image === 'string' ? { uri: image } : image;
 }

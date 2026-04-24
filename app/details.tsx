@@ -15,29 +15,30 @@ import {
 } from 'react-native';
 import { Feather, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getPlaceBySlug, resolveImageSource } from '@/constants/travel-data';
+import { UI } from '@/constants/ui';
 
 function FacilityIcon({ kind }: { kind: string }) {
   if (kind === 'coffee') {
-    return <MaterialCommunityIcons name="coffee-outline" size={26} color="#b4bcc6" />;
+    return <MaterialCommunityIcons name="coffee-outline" size={26} color="#B4BCC6" />;
   }
 
   if (kind === 'food') {
-    return <MaterialCommunityIcons name="silverware-fork-knife" size={26} color="#b4bcc6" />;
+    return <MaterialCommunityIcons name="silverware-fork-knife" size={26} color="#B4BCC6" />;
   }
 
   if (kind === 'stay') {
-    return <Ionicons name="bed-outline" size={26} color="#b4bcc6" />;
+    return <Ionicons name="bed-outline" size={26} color="#B4BCC6" />;
   }
 
   if (kind === 'museum') {
-    return <Ionicons name="library-outline" size={26} color="#b4bcc6" />;
+    return <Ionicons name="library-outline" size={26} color="#B4BCC6" />;
   }
 
   if (kind === 'car') {
-    return <Ionicons name="car-outline" size={26} color="#b4bcc6" />;
+    return <Ionicons name="car-outline" size={26} color="#B4BCC6" />;
   }
 
-  return <MaterialIcons name="landscape" size={26} color="#b4bcc6" />;
+  return <MaterialIcons name="landscape" size={26} color="#B4BCC6" />;
 }
 
 export default function DetailsScreen() {
@@ -107,7 +108,7 @@ export default function DetailsScreen() {
           <View style={styles.heroCard}>
             <Image source={resolveImageSource(place.image)} style={styles.heroImage} />
             <Pressable style={styles.backButton} onPress={() => router.back()}>
-              <Feather name="chevron-left" size={24} color="#aab3be" />
+              <Feather name="chevron-left" size={24} color="#AAB3BE" />
             </Pressable>
             <View style={styles.heroTag}>
               <Text style={styles.heroTagText}>{place.city}</Text>
@@ -116,6 +117,11 @@ export default function DetailsScreen() {
         </Animated.View>
 
         <Animated.View style={revealStyle(contentReveal, 20)}>
+          <View style={styles.metaRow}>
+            <Text style={styles.metaRegion}>{place.region}</Text>
+            <Text style={styles.metaCategory}>{place.category}</Text>
+          </View>
+
           <View style={styles.titleRow}>
             <Text style={styles.title}>{place.title}</Text>
             <Pressable onPress={openMap} hitSlop={8}>
@@ -124,7 +130,7 @@ export default function DetailsScreen() {
           </View>
 
           <View style={styles.ratingRow}>
-            <Ionicons name="star" size={15} color="#f6b443" />
+            <Ionicons name="star" size={15} color="#F6B443" />
             <Text style={styles.ratingText}>
               {place.rating} · {place.category} · {place.duration}
             </Text>
@@ -177,11 +183,7 @@ export default function DetailsScreen() {
           <Text style={styles.priceLabel}>Орієнтовний бюджет</Text>
           <Text style={styles.price}>{place.price}</Text>
         </View>
-        <Pressable
-          style={styles.bookButton}
-          onPress={() => router.push({ pathname: '/collections' })}
-          accessibilityRole="button"
-        >
+        <Pressable style={styles.bookButton} onPress={() => router.push('/collections')} accessibilityRole="button">
           <Text style={styles.bookButtonText}>Спланувати</Text>
           <Ionicons name="arrow-forward" size={22} color="#ffffff" />
         </Pressable>
@@ -193,18 +195,18 @@ export default function DetailsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fbfbf8',
+    backgroundColor: UI.colors.background,
   },
   content: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 156,
     gap: 18,
   },
   heroCard: {
-    borderRadius: 34,
+    borderRadius: UI.radius.xl,
     overflow: 'hidden',
-    backgroundColor: '#dbe7f3',
+    backgroundColor: '#DBE7F3',
     position: 'relative',
   },
   heroImage: {
@@ -217,8 +219,8 @@ const styles = StyleSheet.create({
     left: 18,
     width: 58,
     height: 58,
-    borderRadius: 18,
-    backgroundColor: '#f8fbff',
+    borderRadius: UI.radius.sm,
+    backgroundColor: '#F8FBFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -226,7 +228,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 18,
     bottom: 18,
-    borderRadius: 18,
+    borderRadius: UI.radius.sm,
     backgroundColor: 'rgba(56, 64, 79, 0.85)',
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -236,6 +238,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  metaRegion: {
+    color: UI.colors.accent,
+    fontSize: 13,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  metaCategory: {
+    color: UI.colors.textSoft,
+    fontSize: 13,
+    fontWeight: '600',
+  },
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -244,13 +262,13 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    color: '#252b34',
+    color: UI.colors.text,
     fontSize: 32,
     lineHeight: 36,
     fontWeight: '800',
   },
   mapLink: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -260,13 +278,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   ratingText: {
-    color: '#747c86',
+    color: UI.colors.textMuted,
     fontSize: 15,
   },
   description: {
-    color: '#425261',
-    fontSize: 17,
-    lineHeight: 29,
+    color: '#43505F',
+    fontSize: 16,
+    lineHeight: 27,
   },
   tagsRow: {
     flexDirection: 'row',
@@ -275,55 +293,55 @@ const styles = StyleSheet.create({
   },
   tag: {
     borderRadius: 16,
-    backgroundColor: '#eef4fb',
+    backgroundColor: UI.colors.accentSoft,
     paddingHorizontal: 14,
     paddingVertical: 9,
   },
   tagText: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 14,
     fontWeight: '700',
   },
   sectionTitle: {
     marginTop: 8,
-    color: '#252b34',
+    color: UI.colors.text,
     fontSize: 24,
     fontWeight: '800',
   },
   facilitiesRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
     gap: 10,
   },
   facilityCard: {
-    flex: 1,
-    minHeight: 112,
-    borderRadius: 24,
-    backgroundColor: '#f4f6f9',
+    width: '48%',
+    minHeight: 108,
+    borderRadius: UI.radius.md,
+    backgroundColor: UI.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
     paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   facilityText: {
-    color: '#8d96a3',
+    color: UI.colors.textSoft,
     fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
   },
   storyBlock: {
     marginTop: 4,
-    borderRadius: 28,
-    backgroundColor: '#ffffff',
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.card,
     padding: 18,
     gap: 8,
-    shadowColor: '#d7deea',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   storyLabel: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 12,
     fontWeight: '800',
     textTransform: 'uppercase',
@@ -338,7 +356,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   galleryLabel: {
-    color: '#252b34',
+    color: UI.colors.text,
     fontSize: 20,
     fontWeight: '800',
   },
@@ -359,23 +377,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.97)',
+    borderRadius: UI.radius.lg,
+    backgroundColor: 'rgba(255, 252, 247, 0.97)',
     paddingVertical: 18,
     paddingHorizontal: 20,
-    shadowColor: '#7da8eb',
-    shadowOpacity: 0.22,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
+    borderWidth: 1,
+    borderColor: UI.colors.line,
+    ...UI.shadow,
   },
   priceLabel: {
-    color: '#252b34',
+    color: UI.colors.text,
     fontSize: 15,
     fontWeight: '500',
   },
   price: {
     marginTop: 6,
-    color: '#2ecc9d',
+    color: UI.colors.success,
     fontSize: 32,
     lineHeight: 36,
     fontWeight: '800',
@@ -384,8 +401,8 @@ const styles = StyleSheet.create({
     height: 68,
     minWidth: 176,
     paddingHorizontal: 26,
-    borderRadius: 24,
-    backgroundColor: '#2669f6',
+    borderRadius: UI.radius.md,
+    backgroundColor: UI.colors.accent,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

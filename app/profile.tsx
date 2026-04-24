@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
+import { useEffect, useRef } from 'react';
 import { Animated, Easing, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
 import { PROFILE_DATA } from '@/constants/travel-data';
+import { UI } from '@/constants/ui';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -72,7 +73,9 @@ export default function ProfileScreen() {
           <View style={styles.panel}>
             <Text style={styles.panelLabel}>Наступна поїздка</Text>
             <Text style={styles.panelTitle}>{PROFILE_DATA.nextTrip}</Text>
-            <Text style={styles.panelText}>Мʼякий західний маршрут із двома містами, архітектурою й повільними ранками.</Text>
+            <Text style={styles.panelText}>
+              Мʼякий західний маршрут із двома містами, архітектурою й повільними ранками.
+            </Text>
           </View>
 
           <View style={styles.panel}>
@@ -88,7 +91,9 @@ export default function ProfileScreen() {
 
           <View style={styles.panel}>
             <Text style={styles.panelLabel}>Нотатка від Puzzle</Text>
-            <Text style={styles.panelText}>Тобі добре підійдуть камерні маршрути: Чернівці, Львів, Камʼянець та ранкова Одеса поза піком сезону.</Text>
+            <Text style={styles.panelText}>
+              Тобі добре підійдуть камерні маршрути: Чернівці, Львів, Камʼянець та ранкова Одеса поза піком сезону.
+            </Text>
             <Pressable style={styles.panelButton} onPress={() => router.push('/collections')}>
               <Text style={styles.panelButtonText}>Оновити добірки</Text>
             </Pressable>
@@ -104,36 +109,34 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fbfbf8',
+    backgroundColor: UI.colors.background,
   },
   content: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 132,
     gap: 18,
   },
   label: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 13,
     fontWeight: '800',
     textTransform: 'uppercase',
     marginBottom: 10,
   },
   heroCard: {
-    borderRadius: 32,
-    backgroundColor: '#ffffff',
+    borderRadius: UI.radius.xl,
+    backgroundColor: UI.colors.card,
     padding: 22,
     alignItems: 'center',
-    shadowColor: '#d7deea',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   avatar: {
     width: 76,
     height: 76,
     borderRadius: 38,
-    backgroundColor: '#2e74f6',
+    backgroundColor: UI.colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
@@ -144,19 +147,19 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   name: {
-    color: '#141d29',
+    color: UI.colors.text,
     fontSize: 28,
     fontWeight: '800',
   },
   city: {
     marginTop: 4,
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 15,
     fontWeight: '700',
   },
   tagline: {
     marginTop: 10,
-    color: '#667180',
+    color: UI.colors.textMuted,
     fontSize: 15,
     lineHeight: 22,
     textAlign: 'center',
@@ -165,44 +168,44 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   statCard: {
-    borderRadius: 28,
-    backgroundColor: '#eef4ff',
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.surface,
     padding: 20,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   statNumber: {
-    color: '#141d29',
+    color: UI.colors.text,
     fontSize: 34,
     lineHeight: 38,
     fontWeight: '800',
   },
   statLabel: {
     marginTop: 6,
-    color: '#6f7b89',
+    color: UI.colors.textMuted,
     fontSize: 14,
   },
   panel: {
-    borderRadius: 28,
-    backgroundColor: '#ffffff',
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.card,
     padding: 18,
     gap: 8,
-    shadowColor: '#d7deea',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   panelLabel: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 12,
     fontWeight: '800',
     textTransform: 'uppercase',
   },
   panelTitle: {
-    color: '#1f2630',
+    color: UI.colors.text,
     fontSize: 22,
     fontWeight: '800',
   },
   panelText: {
-    color: '#667180',
+    color: UI.colors.textMuted,
     fontSize: 14,
     lineHeight: 22,
   },
@@ -213,12 +216,12 @@ const styles = StyleSheet.create({
   },
   preference: {
     borderRadius: 16,
-    backgroundColor: '#eef4ff',
+    backgroundColor: UI.colors.accentSoft,
     paddingHorizontal: 14,
     paddingVertical: 9,
   },
   preferenceText: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -226,7 +229,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     alignSelf: 'flex-start',
     borderRadius: 18,
-    backgroundColor: '#2669f6',
+    backgroundColor: UI.colors.accent,
     paddingHorizontal: 16,
     paddingVertical: 11,
   },

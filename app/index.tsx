@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { Animated, Easing, ImageBackground, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '@/constants/theme';
 import { HERO_IMAGE, resolveImageSource } from '@/constants/travel-data';
+import { UI } from '@/constants/ui';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -58,6 +59,11 @@ export default function WelcomeScreen() {
           <View style={styles.overlay} />
           <View style={styles.glow} />
 
+          <View style={styles.topMeta}>
+            <Text style={styles.topMetaText}>Ukraine travel collection</Text>
+            <Text style={styles.topMetaText}>Spring / Summer guide</Text>
+          </View>
+
           <Animated.View style={[styles.brandBlock, revealStyle(brandReveal, 10)]}>
             <Text style={styles.brand}>Puzzle</Text>
           </Animated.View>
@@ -68,12 +74,24 @@ export default function WelcomeScreen() {
             <Text style={styles.body}>
               Міста, тихі локації, маршрути на вікенд і красиві місця, куди хочеться повертатися.
             </Text>
+            <View style={styles.badgesRow}>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>Київ</Text>
+              </View>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>Львів</Text>
+              </View>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>Одеса</Text>
+              </View>
+            </View>
           </Animated.View>
 
           <Animated.View style={[styles.footer, revealStyle(ctaReveal, 24)]}>
             <Pressable style={styles.primaryButton} onPress={() => router.push('/explore')}>
               <Text style={styles.primaryButtonText}>Дослідити</Text>
             </Pressable>
+            <Text style={styles.footerNote}>Від curated city breaks до тихих локальних маршрутів.</Text>
           </Animated.View>
         </ImageBackground>
       </View>
@@ -84,7 +102,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#b8d8fb',
+    backgroundColor: UI.colors.background,
   },
   screen: {
     flex: 1,
@@ -93,71 +111,103 @@ const styles = StyleSheet.create({
   },
   hero: {
     flex: 1,
-    borderRadius: 34,
+    borderRadius: UI.radius.xl,
     overflow: 'hidden',
-    paddingHorizontal: 18,
-    paddingTop: 28,
-    paddingBottom: 20,
+    paddingHorizontal: 22,
+    paddingTop: 22,
+    paddingBottom: 24,
     justifyContent: 'space-between',
     backgroundColor: '#0a315d',
   },
   heroImage: {
-    borderRadius: 34,
+    borderRadius: UI.radius.xl,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(11, 27, 49, 0.20)',
+    backgroundColor: 'rgba(10, 24, 44, 0.28)',
   },
   glow: {
     position: 'absolute',
-    right: -35,
-    top: 190,
-    width: 220,
-    height: 220,
-    borderRadius: 220,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    right: -60,
+    top: 170,
+    width: 260,
+    height: 260,
+    borderRadius: 260,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+  },
+  topMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  topMetaText: {
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 12,
+    fontFamily: Fonts.mono,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   brandBlock: {
     alignItems: 'center',
+    marginTop: 10,
   },
   brand: {
     color: '#ffffff',
-    fontSize: 84,
-    lineHeight: 90,
+    fontSize: 78,
+    lineHeight: 84,
     fontFamily: Fonts.serif,
     fontStyle: 'italic',
     fontWeight: '700',
     letterSpacing: -3,
   },
   copyBlock: {
-    gap: 6,
+    gap: 8,
   },
   eyebrow: {
     color: '#f3f8ff',
-    fontSize: 30,
-    fontWeight: '300',
+    fontSize: 24,
+    fontWeight: '400',
   },
   title: {
     color: '#ffffff',
-    fontSize: 54,
-    lineHeight: 58,
+    fontSize: 52,
+    lineHeight: 56,
     fontWeight: '800',
     letterSpacing: -2.2,
   },
   body: {
-    maxWidth: 265,
-    marginTop: 8,
+    maxWidth: 280,
+    marginTop: 6,
     color: '#e7eef8',
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 10,
+  },
+  badge: {
+    borderRadius: UI.radius.pill,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+  },
+  badgeText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '700',
   },
   footer: {
     gap: 12,
   },
   primaryButton: {
-    height: 62,
-    borderRadius: 22,
-    backgroundColor: '#2669f6',
+    height: 60,
+    borderRadius: UI.radius.md,
+    backgroundColor: UI.colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -165,5 +215,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 19,
     fontWeight: '800',
+  },
+  footerNote: {
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 13,
+    lineHeight: 19,
+    maxWidth: 260,
   },
 });

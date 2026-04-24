@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { Animated, Easing, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
 import { getSavedPlaces, resolveImageSource } from '@/constants/travel-data';
+import { UI } from '@/constants/ui';
 
 const savedPlaces = getSavedPlaces();
 
@@ -64,6 +65,7 @@ export default function SavedScreen() {
             >
               <Image source={resolveImageSource(place.image)} style={styles.placeImage} />
               <View style={styles.placeCopy}>
+                <Text style={styles.placeRegion}>{place.region}</Text>
                 <Text style={styles.placeTitle}>{place.title}</Text>
                 <Text style={styles.placeMeta}>
                   {place.city} · {place.category}
@@ -87,23 +89,23 @@ export default function SavedScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fbfbf8',
+    backgroundColor: UI.colors.background,
   },
   content: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 132,
     gap: 20,
   },
   label: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 13,
     fontWeight: '800',
     textTransform: 'uppercase',
     marginBottom: 10,
   },
   title: {
-    color: '#141d29',
+    color: UI.colors.text,
     fontSize: 38,
     lineHeight: 42,
     fontWeight: '800',
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     marginTop: 12,
-    color: '#667180',
+    color: UI.colors.textMuted,
     fontSize: 16,
     lineHeight: 24,
     maxWidth: 320,
@@ -120,34 +122,41 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   placeCard: {
-    borderRadius: 28,
+    borderRadius: UI.radius.lg,
     overflow: 'hidden',
-    backgroundColor: '#ffffff',
-    shadowColor: '#d7deea',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
+    backgroundColor: UI.colors.card,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
+    flexDirection: 'row',
+    minHeight: 164,
   },
   placeImage: {
-    width: '100%',
-    height: 190,
+    width: 126,
+    height: '100%',
   },
   placeCopy: {
     padding: 18,
     gap: 8,
+    flex: 1,
+  },
+  placeRegion: {
+    color: UI.colors.accent,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
   },
   placeTitle: {
-    color: '#1f2630',
-    fontSize: 22,
+    color: UI.colors.text,
+    fontSize: 20,
     fontWeight: '800',
   },
   placeMeta: {
-    color: '#2e74f6',
+    color: UI.colors.textMuted,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   placeExcerpt: {
-    color: '#667180',
+    color: UI.colors.textMuted,
     fontSize: 14,
     lineHeight: 22,
   },
@@ -157,12 +166,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   placeBudget: {
-    color: '#19b786',
+    color: UI.colors.success,
     fontSize: 16,
     fontWeight: '800',
   },
   placeRating: {
-    color: '#8d96a3',
+    color: UI.colors.textSoft,
     fontSize: 15,
     fontWeight: '700',
   },

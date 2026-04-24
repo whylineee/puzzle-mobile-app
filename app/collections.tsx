@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { Animated, Easing, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
 import { resolveImageSource, UKRAINE_COLLECTIONS, UKRAINE_PLACES } from '@/constants/travel-data';
+import { UI } from '@/constants/ui';
 
 export default function CollectionsScreen() {
   const router = useRouter();
@@ -101,23 +102,23 @@ export default function CollectionsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fbfbf8',
+    backgroundColor: UI.colors.background,
   },
   content: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 132,
     gap: 20,
   },
   label: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 13,
     fontWeight: '800',
     textTransform: 'uppercase',
     marginBottom: 10,
   },
   title: {
-    color: '#141d29',
+    color: UI.colors.text,
     fontSize: 38,
     lineHeight: 42,
     fontWeight: '800',
@@ -125,14 +126,14 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     marginTop: 12,
-    color: '#667180',
+    color: UI.colors.textMuted,
     fontSize: 16,
     lineHeight: 24,
     maxWidth: 320,
   },
   featuredCard: {
     height: 310,
-    borderRadius: 34,
+    borderRadius: UI.radius.xl,
     overflow: 'hidden',
     marginBottom: 18,
   },
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
     padding: 22,
   },
   featuredMood: {
-    color: '#d8e8ff',
+    color: '#D8E8FF',
     fontSize: 12,
     fontWeight: '800',
     textTransform: 'uppercase',
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   featuredDescription: {
-    color: '#eef3fa',
+    color: '#EEF3FA',
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 280,
@@ -174,52 +175,50 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   routeCard: {
-    borderRadius: 28,
-    backgroundColor: '#ffffff',
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.card,
     padding: 18,
     gap: 8,
-    shadowColor: '#d7deea',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   routeMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   routeDuration: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 13,
     fontWeight: '800',
   },
   routeMood: {
-    color: '#99a2ad',
+    color: UI.colors.textSoft,
     fontSize: 13,
   },
   routeTitle: {
-    color: '#1f2630',
+    color: UI.colors.text,
     fontSize: 22,
     fontWeight: '800',
   },
   routeDescription: {
-    color: '#667180',
+    color: UI.colors.textMuted,
     fontSize: 14,
     lineHeight: 22,
   },
   routeStops: {
-    color: '#9ba4af',
+    color: UI.colors.textSoft,
     fontSize: 13,
   },
   routeAction: {
     marginTop: 6,
     alignSelf: 'flex-start',
     borderRadius: 18,
-    backgroundColor: '#eef4ff',
+    backgroundColor: UI.colors.accentSoft,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
   routeActionText: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 14,
     fontWeight: '700',
   },

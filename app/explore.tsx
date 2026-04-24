@@ -15,6 +15,7 @@ import {
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { BottomNav } from '@/components/bottom-nav';
 import { resolveImageSource, UKRAINE_CITIES, UKRAINE_COLLECTIONS, UKRAINE_PLACES } from '@/constants/travel-data';
+import { UI } from '@/constants/ui';
 
 const categories = ['Усі', 'Міста', 'Природа', 'Кава', 'Вікенд'];
 
@@ -118,20 +119,28 @@ export default function ExploreScreen() {
           <View style={styles.topRow}>
             <Text style={styles.label}>Досліджуй</Text>
             <View style={styles.locationGroup}>
-              <Ionicons name="location-sharp" size={14} color="#2e74f6" />
+              <Ionicons name="location-sharp" size={14} color={UI.colors.accent} />
               <Text style={styles.location}>Україна</Text>
-              <Ionicons name="chevron-down" size={14} color="#2e74f6" />
+              <Ionicons name="chevron-down" size={14} color={UI.colors.accent} />
             </View>
           </View>
 
           <Text style={styles.title}>Puzzle</Text>
           <Text style={styles.subtitle}>Міста, красиві локації та короткі маршрути по Україні.</Text>
 
+          <View style={styles.heroStrip}>
+            <Text style={styles.heroStripLabel}>Editor’s pick</Text>
+            <Text style={styles.heroStripTitle}>Львів + Чернівці на довгі вихідні</Text>
+            <Text style={styles.heroStripMeta}>
+              Тиха архітектура, ранкова кава і міста, що добре працюють у повільному темпі.
+            </Text>
+          </View>
+
           <View style={styles.searchBar}>
-            <Feather name="search" size={18} color="#b6c0ce" />
+            <Feather name="search" size={18} color={UI.colors.textSoft} />
             <TextInput
               placeholder="Шукати міста та місця"
-              placeholderTextColor="#b4bfcd"
+              placeholderTextColor={UI.colors.textSoft}
               style={styles.searchInput}
               value={query}
               onChangeText={setQuery}
@@ -139,7 +148,7 @@ export default function ExploreScreen() {
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsRow}>
-            {categories.map((category, index) => (
+            {categories.map((category) => (
               <Pressable
                 key={category}
                 style={[styles.tabPill, activeCategory === category && styles.activeTabPill]}
@@ -164,6 +173,9 @@ export default function ExploreScreen() {
               <View key={city.slug} style={styles.cityCard}>
                 <Image source={resolveImageSource(city.image)} style={styles.cityImage} />
                 <View style={styles.cityOverlay} />
+                <View style={styles.cityTopBadge}>
+                  <Text style={styles.cityTopBadgeText}>{city.region}</Text>
+                </View>
                 <Text style={styles.cityName}>{city.name}</Text>
                 <Text style={styles.cityTagline}>{city.tagline}</Text>
                 <View style={styles.cityMetaRow}>
@@ -201,7 +213,7 @@ export default function ExploreScreen() {
               >
                 <Image source={resolveImageSource(place.image)} style={styles.placeImage} />
                 <View style={styles.ratingBadge}>
-                  <Ionicons name="star" size={14} color="#f7c552" />
+                  <Ionicons name="star" size={14} color="#F7C552" />
                   <Text style={styles.ratingText}>{place.rating}</Text>
                 </View>
                 <View style={styles.placeCaption}>
@@ -232,10 +244,7 @@ export default function ExploreScreen() {
           <View style={styles.collectionsList}>
             {UKRAINE_COLLECTIONS.slice(0, 2).map((collection) => (
               <View key={collection.slug} style={styles.collectionCard}>
-                <Image
-                  source={resolveImageSource(collection.image)}
-                  style={styles.collectionImage}
-                />
+                <Image source={resolveImageSource(collection.image)} style={styles.collectionImage} />
                 <View style={styles.collectionCopy}>
                   <Text style={styles.collectionMood}>{collection.mood}</Text>
                   <Text style={styles.collectionTitle}>{collection.title}</Text>
@@ -256,13 +265,13 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fbfbf8',
+    backgroundColor: UI.colors.background,
   },
   content: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 132,
-    gap: 20,
+    gap: 22,
   },
   topRow: {
     flexDirection: 'row',
@@ -272,7 +281,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 15,
-    color: '#2f3440',
+    color: UI.colors.text,
   },
   locationGroup: {
     flexDirection: 'row',
@@ -281,58 +290,85 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 15,
-    color: '#6f7782',
+    color: UI.colors.textMuted,
   },
   title: {
-    color: '#121a27',
-    fontSize: 50,
-    lineHeight: 52,
+    color: UI.colors.text,
+    fontSize: 52,
+    lineHeight: 54,
     fontWeight: '700',
     marginBottom: 6,
   },
   subtitle: {
-    color: '#667180',
+    color: UI.colors.textMuted,
     fontSize: 16,
     lineHeight: 24,
-    maxWidth: 300,
+    maxWidth: 310,
+    marginBottom: 16,
+  },
+  heroStrip: {
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.surfaceMuted,
+    padding: 18,
     marginBottom: 18,
+    gap: 6,
+  },
+  heroStripLabel: {
+    color: UI.colors.accent,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  heroStripTitle: {
+    color: UI.colors.text,
+    fontSize: 24,
+    lineHeight: 28,
+    fontWeight: '800',
+    maxWidth: 280,
+  },
+  heroStripMeta: {
+    color: UI.colors.textMuted,
+    fontSize: 14,
+    lineHeight: 21,
   },
   searchBar: {
-    height: 66,
-    borderRadius: 24,
-    backgroundColor: '#eef4fa',
+    height: 62,
+    borderRadius: UI.radius.md,
+    backgroundColor: UI.colors.surface,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 22,
+    paddingHorizontal: 18,
     gap: 12,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   searchInput: {
     flex: 1,
     fontSize: 17,
-    color: '#223040',
+    color: UI.colors.text,
   },
   tabsRow: {
-    paddingTop: 22,
-    paddingBottom: 6,
+    paddingTop: 18,
+    paddingBottom: 4,
     gap: 10,
   },
   tabPill: {
     height: 44,
     paddingHorizontal: 18,
-    borderRadius: 18,
+    borderRadius: UI.radius.sm,
     justifyContent: 'center',
     backgroundColor: 'transparent',
   },
   activeTabPill: {
-    backgroundColor: '#edf4ff',
+    backgroundColor: UI.colors.accentSoft,
   },
   tabText: {
-    color: '#b0b6bf',
-    fontSize: 15,
+    color: UI.colors.textSoft,
+    fontSize: 14,
     fontWeight: '500',
   },
   activeTabText: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontWeight: '700',
   },
   sectionHeader: {
@@ -342,12 +378,12 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   sectionTitle: {
-    color: '#222834',
+    color: UI.colors.text,
     fontSize: 24,
     fontWeight: '800',
   },
   sectionAction: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 15,
     fontWeight: '700',
   },
@@ -356,9 +392,9 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
   },
   cityCard: {
-    width: 248,
-    height: 316,
-    borderRadius: 30,
+    width: 260,
+    height: 300,
+    borderRadius: UI.radius.xl,
     overflow: 'hidden',
     justifyContent: 'flex-end',
     padding: 18,
@@ -370,17 +406,31 @@ const styles = StyleSheet.create({
   },
   cityOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(9, 25, 47, 0.28)',
+    backgroundColor: 'rgba(9, 25, 47, 0.34)',
+  },
+  cityTopBadge: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    borderRadius: UI.radius.pill,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  cityTopBadgeText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '700',
   },
   cityName: {
     color: '#ffffff',
-    fontSize: 31,
-    lineHeight: 34,
+    fontSize: 30,
+    lineHeight: 33,
     fontWeight: '800',
     marginBottom: 8,
   },
   cityTagline: {
-    color: '#eef3fa',
+    color: '#EEF3FA',
     fontSize: 14,
     lineHeight: 21,
   },
@@ -390,7 +440,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   cityMeta: {
-    color: '#f0f5fb',
+    color: '#F0F5FB',
     fontSize: 12,
     fontWeight: '700',
   },
@@ -400,13 +450,15 @@ const styles = StyleSheet.create({
   },
   placeCard: {
     width: 230,
-    borderRadius: 28,
+    borderRadius: UI.radius.lg,
     overflow: 'hidden',
-    backgroundColor: '#eff3f8',
+    backgroundColor: UI.colors.card,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   placeImage: {
     width: '100%',
-    height: 258,
+    height: 248,
   },
   ratingBadge: {
     position: 'absolute',
@@ -431,70 +483,68 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   placeTitle: {
-    color: '#1f2630',
+    color: UI.colors.text,
     fontSize: 18,
     fontWeight: '800',
   },
   placeMeta: {
-    color: '#71808f',
+    color: UI.colors.textMuted,
     fontSize: 14,
   },
   collectionsList: {
-    gap: 14,
+    gap: 12,
   },
   collectionCard: {
-    borderRadius: 28,
+    borderRadius: UI.radius.lg,
     overflow: 'hidden',
-    backgroundColor: '#ffffff',
-    shadowColor: '#d7deea',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
+    backgroundColor: UI.colors.card,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
   },
   collectionImage: {
     width: '100%',
-    height: 176,
+    height: 164,
   },
   collectionCopy: {
     padding: 18,
     gap: 8,
   },
   collectionMood: {
-    color: '#2e74f6',
+    color: UI.colors.accent,
     fontSize: 12,
     fontWeight: '800',
     textTransform: 'uppercase',
   },
   collectionTitle: {
-    color: '#1f2630',
+    color: UI.colors.text,
     fontSize: 22,
     fontWeight: '800',
   },
   collectionDescription: {
-    color: '#667180',
+    color: UI.colors.textMuted,
     fontSize: 14,
     lineHeight: 21,
   },
   collectionStops: {
-    color: '#8f98a4',
+    color: UI.colors.textSoft,
     fontSize: 13,
   },
   emptyStateCard: {
     width: 230,
     minHeight: 150,
-    borderRadius: 24,
-    backgroundColor: '#f2f6fc',
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.cardSoft,
     padding: 16,
     justifyContent: 'center',
     gap: 6,
   },
   emptyStateTitle: {
-    color: '#1f2630',
+    color: UI.colors.text,
     fontSize: 16,
     fontWeight: '700',
   },
   emptyStateText: {
-    color: '#7d8794',
+    color: UI.colors.textMuted,
     fontSize: 13,
     lineHeight: 19,
   },

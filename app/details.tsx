@@ -8,13 +8,17 @@ import {
   Linking,
   Pressable,
   SafeAreaView,
+  Share,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { Feather, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getPlaceBySlug, resolveImageSource } from '@/constants/travel-data';
+import { useSavedPlaces } from '@/hooks/use-saved-places';
+import { useTripPlanner } from '@/hooks/use-trip-planner';
 import { UI } from '@/constants/ui';
 
 function FacilityIcon({ kind }: { kind: string }) {
@@ -43,8 +47,10 @@ function FacilityIcon({ kind }: { kind: string }) {
 
 export default function DetailsScreen() {
   const router = useRouter();
+  const { isSaved, toggleSaved } = useSavedPlaces();
   const params = useLocalSearchParams<{ slug?: string }>();
   const place = useMemo(() => getPlaceBySlug(params.slug), [params.slug]);
+  const { completed, plan, ready, setDate, setNote, toggleChecklistItem, total } = useTripPlanner(place.slug);
   const heroReveal = useRef(new Animated.Value(0)).current;
   const contentReveal = useRef(new Animated.Value(0)).current;
   const footerReveal = useRef(new Animated.Value(0)).current;
@@ -101,6 +107,16 @@ export default function DetailsScreen() {
     Alert.alert('Не вдалося відкрити мапу', 'Спробуй ще раз або перевір підключення до інтернету.');
   };
 
+  const sharePlace = async () => {
+    try {
+      await Share.share({
+        message: `${place.title} (${place.city}) — ${place.excerpt}`,
+      });
+    } catch {
+      Alert.alert('Не вдалося поділитися', 'Спробуй ще раз через кілька секунд.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -109,6 +125,12 @@ export default function DetailsScreen() {
             <Image source={resolveImageSource(place.image)} style={styles.heroImage} />
             <Pressable style={styles.backButton} onPress={() => router.back()}>
               <Feather name="chevron-left" size={24} color="#AAB3BE" />
+            </Pressable>
+            <Pressable
+              style={[styles.saveButton, isSaved(place.slug) && styles.saveButtonActive]}
+              onPress={() => toggleSaved(place.slug)}
+            >
+              <Ionicons name={isSaved(place.slug) ? 'heart' : 'heart-outline'} size={20} color="#FFFFFF" />
             </Pressable>
             <View style={styles.heroTag}>
               <Text style={styles.heroTagText}>{place.city}</Text>
@@ -124,9 +146,14 @@ export default function DetailsScreen() {
 
           <View style={styles.titleRow}>
             <Text style={styles.title}>{place.title}</Text>
-            <Pressable onPress={openMap} hitSlop={8}>
-              <Text style={styles.mapLink}>На мапі</Text>
-            </Pressable>
+            <View style={styles.titleActions}>
+              <Pressable onPress={openMap} hitSlop={8}>
+                <Text style={styles.mapLink}>На мапі</Text>
+              </Pressable>
+              <Pressable onPress={sharePlace} hitSlop={8}>
+                <Text style={styles.shareLink}>Поділитися</Text>
+              </Pressable>
+            </View>
           </View>
 
           <View style={styles.ratingRow}>
@@ -175,6 +202,57 @@ export default function DetailsScreen() {
               </ScrollView>
             </View>
           ) : null}
+
+          <View style={styles.plannerCard}>
+            <View style={styles.plannerHeader}>
+              <Text style={styles.plannerTitle}>План поїздки</Text>
+              <Text style={styles.plannerProgress}>
+                {completed}/{total} готово
+              </Text>
+            </View>
+
+            {!ready ? <Text style={styles.plannerHint}>Завантажуємо твій план...</Text> : null}
+
+            <Text style={styles.fieldLabel}>Дата візиту</Text>
+            <TextInput
+              value={plan.date}
+              onChangeText={(value) => setDate(place.slug, value.slice(0, 10))}
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor={UI.colors.textSoft}
+              style={styles.fieldInput}
+              autoCapitalize="none"
+              autoCorrect={false}
+              maxLength={10}
+            />
+
+            <Text style={styles.fieldLabel}>Нотатка</Text>
+            <TextInput
+              value={plan.note}
+              onChangeText={(value) => setNote(place.slug, value.slice(0, 240))}
+              placeholder="Що важливо не забути перед поїздкою?"
+              placeholderTextColor={UI.colors.textSoft}
+              style={[styles.fieldInput, styles.noteInput]}
+              multiline
+              textAlignVertical="top"
+              maxLength={240}
+            />
+            <Text style={styles.noteCounter}>{plan.note.length}/240</Text>
+
+            <View style={styles.checklistWrap}>
+              {plan.checklist.map((item) => (
+                <Pressable
+                  key={item.id}
+                  style={[styles.checklistItem, item.done && styles.checklistItemDone]}
+                  onPress={() => toggleChecklistItem(place.slug, item.id)}
+                >
+                  <View style={[styles.checkbox, item.done && styles.checkboxDone]}>
+                    {item.done ? <Ionicons name="checkmark" size={14} color="#FFFFFF" /> : null}
+                  </View>
+                  <Text style={[styles.checklistLabel, item.done && styles.checklistLabelDone]}>{item.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
         </Animated.View>
       </ScrollView>
 
@@ -224,6 +302,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  saveButton: {
+    position: 'absolute',
+    top: 18,
+    right: 18,
+    width: 46,
+    height: 46,
+    borderRadius: 16,
+    backgroundColor: 'rgba(34, 44, 58, 0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveButtonActive: {
+    backgroundColor: 'rgba(46, 116, 246, 0.85)',
+  },
   heroTag: {
     position: 'absolute',
     right: 18,
@@ -260,6 +352,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 14,
   },
+  titleActions: {
+    alignItems: 'flex-end',
+    gap: 6,
+  },
   title: {
     flex: 1,
     color: UI.colors.text,
@@ -270,6 +366,11 @@ const styles = StyleSheet.create({
   mapLink: {
     color: UI.colors.accent,
     fontSize: 16,
+    fontWeight: '700',
+  },
+  shareLink: {
+    color: UI.colors.textSoft,
+    fontSize: 14,
     fontWeight: '700',
   },
   ratingRow: {
@@ -368,6 +469,102 @@ const styles = StyleSheet.create({
     width: 240,
     height: 150,
     borderRadius: 20,
+  },
+  plannerCard: {
+    marginTop: 10,
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.card,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
+    padding: 16,
+    gap: 10,
+  },
+  plannerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  plannerTitle: {
+    color: UI.colors.text,
+    fontSize: 22,
+    fontWeight: '800',
+  },
+  plannerProgress: {
+    color: UI.colors.accent,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  plannerHint: {
+    color: UI.colors.textMuted,
+    fontSize: 13,
+  },
+  fieldLabel: {
+    marginTop: 6,
+    color: UI.colors.textMuted,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  fieldInput: {
+    minHeight: 46,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
+    backgroundColor: UI.colors.surface,
+    paddingHorizontal: 12,
+    color: UI.colors.text,
+    fontSize: 15,
+  },
+  noteInput: {
+    minHeight: 86,
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  noteCounter: {
+    alignSelf: 'flex-end',
+    color: UI.colors.textSoft,
+    fontSize: 12,
+    marginTop: -4,
+  },
+  checklistWrap: {
+    gap: 8,
+    marginTop: 2,
+  },
+  checklistItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
+    backgroundColor: UI.colors.surface,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  checklistItemDone: {
+    backgroundColor: UI.colors.accentSoft,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: UI.colors.textSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  checkboxDone: {
+    borderColor: UI.colors.accent,
+    backgroundColor: UI.colors.accent,
+  },
+  checklistLabel: {
+    flex: 1,
+    color: UI.colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  checklistLabelDone: {
+    color: UI.colors.accent,
   },
   footer: {
     position: 'absolute',

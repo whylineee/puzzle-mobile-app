@@ -3,10 +3,12 @@ import { useEffect, useRef } from 'react';
 import { Animated, Easing, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
 import { PROFILE_DATA } from '@/constants/travel-data';
+import { useSavedPlaces } from '@/hooks/use-saved-places';
 import { UI } from '@/constants/ui';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { savedPlaces } = useSavedPlaces();
   const topReveal = useRef(new Animated.Value(0)).current;
   const cardsReveal = useRef(new Animated.Value(0)).current;
 
@@ -66,7 +68,7 @@ export default function ProfileScreen() {
             <Text style={styles.statLabel}>відвіданих міст</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{PROFILE_DATA.savedPlaces}</Text>
+            <Text style={styles.statNumber}>{savedPlaces.length}</Text>
             <Text style={styles.statLabel}>збережених місць</Text>
           </View>
 

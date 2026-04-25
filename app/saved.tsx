@@ -2,13 +2,13 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { Animated, Easing, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
-import { getSavedPlaces, resolveImageSource } from '@/constants/travel-data';
+import { resolveImageSource } from '@/constants/travel-data';
+import { useSavedPlaces } from '@/hooks/use-saved-places';
 import { UI } from '@/constants/ui';
-
-const savedPlaces = getSavedPlaces();
 
 export default function SavedScreen() {
   const router = useRouter();
+  const { ready, savedPlaces } = useSavedPlaces();
   const headerReveal = useRef(new Animated.Value(0)).current;
   const listReveal = useRef(new Animated.Value(0)).current;
 
@@ -57,6 +57,7 @@ export default function SavedScreen() {
         </Animated.View>
 
         <Animated.View style={[styles.list, revealStyle(listReveal, 20)]}>
+          {!ready ? <Text style={styles.emptyHint}>Завантажуємо збережені місця...</Text> : null}
           {savedPlaces.map((place) => (
             <Pressable
               key={place.slug}
@@ -78,6 +79,15 @@ export default function SavedScreen() {
               </View>
             </Pressable>
           ))}
+          {ready && !savedPlaces.length ? (
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyTitle}>Ще нічого не збережено</Text>
+              <Text style={styles.emptyHint}>Відкрий будь-яку локацію і натисни сердечко, щоб додати її в обране.</Text>
+              <Pressable style={styles.emptyButton} onPress={() => router.push('/explore')}>
+                <Text style={styles.emptyButtonText}>Дослідити локації</Text>
+              </Pressable>
+            </View>
+          ) : null}
         </Animated.View>
       </ScrollView>
 
@@ -173,6 +183,37 @@ const styles = StyleSheet.create({
   placeRating: {
     color: UI.colors.textSoft,
     fontSize: 15,
+    fontWeight: '700',
+  },
+  emptyCard: {
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.card,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
+    padding: 18,
+    gap: 10,
+  },
+  emptyTitle: {
+    color: UI.colors.text,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  emptyHint: {
+    color: UI.colors.textMuted,
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  emptyButton: {
+    marginTop: 4,
+    alignSelf: 'flex-start',
+    borderRadius: 16,
+    backgroundColor: UI.colors.accentSoft,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  emptyButtonText: {
+    color: UI.colors.accent,
+    fontSize: 14,
     fontWeight: '700',
   },
 });

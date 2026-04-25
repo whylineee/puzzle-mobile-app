@@ -1,10 +1,11 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { SavedPlacesProvider } from '@/hooks/use-saved-places';
 
 export default function RootLayout() {
   return (
-    <>
+    <SavedPlacesProvider>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -18,6 +19,6 @@ export default function RootLayout() {
         <Stack.Screen name="details" />
       </Stack>
       <StatusBar style="dark" />
-    </>
+    </SavedPlacesProvider>
   );
 }

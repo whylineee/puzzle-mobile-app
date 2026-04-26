@@ -12,17 +12,20 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { BottomNav } from '@/components/bottom-nav';
 import { resolveImageSource, UKRAINE_CITIES, UKRAINE_COLLECTIONS, UKRAINE_PLACES } from '@/constants/travel-data';
 import { UI } from '@/constants/ui';
 
 const categories = ['Усі', 'Міста', 'Природа', 'Кава', 'Вікенд'];
+const QUICK_START_KEY = 'puzzle.quickStart.v1';
 
 export default function ExploreScreen() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const [quickStartSlug, setQuickStartSlug] = useState(UKRAINE_PLACES[0].slug);
   const topReveal = useRef(new Animated.Value(0)).current;
   const cardsReveal = useRef(new Animated.Value(0)).current;
   const collectionsReveal = useRef(new Animated.Value(0)).current;
@@ -55,6 +58,24 @@ export default function ExploreScreen() {
       animation.stop();
     };
   }, [cardsReveal, collectionsReveal, topReveal]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    AsyncStorage.getItem(QUICK_START_KEY)
+      .then((value) => {
+        if (mounted && value) {
+          setQuickStartSlug(value);
+        }
+      })
+      .catch(() => {
+        // Keep default recommendation when quick start read fails.
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const revealStyle = (progress: Animated.Value, offset = 18) => ({
     opacity: progress,
@@ -114,7 +135,12 @@ export default function ExploreScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
         <Animated.View style={revealStyle(topReveal, 10)}>
           <View style={styles.topRow}>
             <Text style={styles.label}>Досліджуй</Text>
@@ -134,6 +160,33 @@ export default function ExploreScreen() {
             <Text style={styles.heroStripMeta}>
               Тиха архітектура, ранкова кава і міста, що добре працюють у повільному темпі.
             </Text>
+          </View>
+
+          <View style={styles.quickStartCard}>
+            <Text style={styles.quickStartLabel}>Швидкий старт</Text>
+            <Text style={styles.quickStartTitle}>Повернутись до останнього маршруту</Text>
+            <View style={styles.quickStartActions}>
+              <Pressable
+                style={styles.quickStartButton}
+                onPress={() => {
+                  router.push({ pathname: '/details', params: { slug: quickStartSlug } });
+                }}
+              >
+                <Text style={styles.quickStartButtonText}>Продовжити</Text>
+              </Pressable>
+              <Pressable
+                style={styles.quickStartGhost}
+                onPress={() => {
+                  const nextSlug = UKRAINE_PLACES[(UKRAINE_PLACES.findIndex((entry) => entry.slug === quickStartSlug) + 1) % UKRAINE_PLACES.length].slug;
+                  setQuickStartSlug(nextSlug);
+                  AsyncStorage.setItem(QUICK_START_KEY, nextSlug).catch(() => {
+                    // Keep in-memory state if persistence fails.
+                  });
+                }}
+              >
+                <Text style={styles.quickStartGhostText}>Інша рекомендація</Text>
+              </Pressable>
+            </View>
           </View>
 
           <View style={styles.searchBar}>
@@ -313,6 +366,52 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     gap: 6,
   },
+  quickStartCard: {
+    borderRadius: UI.radius.lg,
+    backgroundColor: UI.colors.card,
+    borderWidth: 1,
+    borderColor: UI.colors.line,
+    padding: 16,
+    marginBottom: 16,
+    gap: 8,
+  },
+  quickStartLabel: {
+    color: UI.colors.accent,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  quickStartTitle: {
+    color: UI.colors.text,
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  quickStartActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  quickStartButton: {
+    borderRadius: 14,
+    backgroundColor: UI.colors.accent,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  quickStartButtonText: {
+    color: UI.colors.card,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  quickStartGhost: {
+    borderRadius: 14,
+    backgroundColor: UI.colors.accentSoft,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  quickStartGhostText: {
+    color: UI.colors.accent,
+    fontSize: 13,
+    fontWeight: '700',
+  },
   heroStripLabel: {
     color: UI.colors.accent,
     fontSize: 12,
@@ -418,12 +517,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   cityTopBadgeText: {
-    color: '#ffffff',
+    color: UI.colors.card,
     fontSize: 12,
     fontWeight: '700',
   },
   cityName: {
-    color: '#ffffff',
+    color: UI.colors.card,
     fontSize: 30,
     lineHeight: 33,
     fontWeight: '800',
@@ -473,7 +572,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   ratingText: {
-    color: '#ffffff',
+    color: UI.colors.card,
     fontSize: 14,
     fontWeight: '700',
   },

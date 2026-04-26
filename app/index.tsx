@@ -1,12 +1,14 @@
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'expo-router';
+import { Href, useRouter } from 'expo-router';
 import { Animated, Easing, ImageBackground, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '@/constants/theme';
 import { HERO_IMAGE, resolveImageSource } from '@/constants/travel-data';
 import { UI } from '@/constants/ui';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const brandReveal = useRef(new Animated.Value(0)).current;
   const copyReveal = useRef(new Animated.Value(0)).current;
   const ctaReveal = useRef(new Animated.Value(0)).current;
@@ -91,6 +93,11 @@ export default function WelcomeScreen() {
             <Pressable style={styles.primaryButton} onPress={() => router.push('/explore')}>
               <Text style={styles.primaryButtonText}>Дослідити</Text>
             </Pressable>
+            {!isAuthenticated ? (
+              <Pressable style={styles.secondaryButton} onPress={() => router.push('/auth' as Href)}>
+                <Text style={styles.secondaryButtonText}>Увійти в акаунт</Text>
+              </Pressable>
+            ) : null}
             <Text style={styles.footerNote}>Від curated city breaks до тихих локальних маршрутів.</Text>
           </Animated.View>
         </ImageBackground>
@@ -117,7 +124,7 @@ const styles = StyleSheet.create({
     paddingTop: 22,
     paddingBottom: 24,
     justifyContent: 'space-between',
-    backgroundColor: '#0a315d',
+    backgroundColor: '#0A315D',
   },
   heroImage: {
     borderRadius: UI.radius.xl,
@@ -152,7 +159,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   brand: {
-    color: '#ffffff',
+    color: UI.colors.card,
     fontSize: 78,
     lineHeight: 84,
     fontFamily: Fonts.serif,
@@ -169,7 +176,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   title: {
-    color: '#ffffff',
+    color: UI.colors.card,
     fontSize: 52,
     lineHeight: 56,
     fontWeight: '800',
@@ -197,7 +204,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.12)',
   },
   badgeText: {
-    color: '#ffffff',
+    color: UI.colors.card,
     fontSize: 13,
     fontWeight: '700',
   },
@@ -212,9 +219,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: UI.colors.card,
     fontSize: 19,
     fontWeight: '800',
+  },
+  secondaryButton: {
+    height: 52,
+    borderRadius: UI.radius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.28)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryButtonText: {
+    color: UI.colors.card,
+    fontSize: 16,
+    fontWeight: '700',
   },
   footerNote: {
     color: 'rgba(255,255,255,0.82)',

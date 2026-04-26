@@ -1,14 +1,16 @@
-import { useRouter } from 'expo-router';
+import { Href, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BottomNav } from '@/components/bottom-nav';
 import { PROFILE_DATA } from '@/constants/travel-data';
+import { useAuth } from '@/hooks/use-auth';
 import { useSavedPlaces } from '@/hooks/use-saved-places';
 import { UI } from '@/constants/ui';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { savedPlaces } = useSavedPlaces();
+  const { isAuthenticated, user, logout } = useAuth();
   const topReveal = useRef(new Animated.Value(0)).current;
   const cardsReveal = useRef(new Animated.Value(0)).current;
 
@@ -56,13 +58,33 @@ export default function ProfileScreen() {
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>М</Text>
             </View>
-            <Text style={styles.name}>{PROFILE_DATA.name}</Text>
+            <Text style={styles.name}>{user?.name ?? PROFILE_DATA.name}</Text>
             <Text style={styles.city}>{PROFILE_DATA.city}</Text>
             <Text style={styles.tagline}>{PROFILE_DATA.tagline}</Text>
+            <View style={styles.quickActions}>
+              <Pressable style={styles.quickActionButton} onPress={() => router.push('/settings' as Href)}>
+                <Text style={styles.quickActionButtonText}>Налаштування</Text>
+              </Pressable>
+              <Pressable style={styles.quickActionButton} onPress={() => router.push('/shop' as Href)}>
+                <Text style={styles.quickActionButtonText}>Shop</Text>
+              </Pressable>
+              <Pressable style={styles.quickActionButton} onPress={() => router.push((isAuthenticated ? '/explore' : '/auth') as Href)}>
+                <Text style={styles.quickActionButtonText}>{isAuthenticated ? 'На головну' : 'Увійти'}</Text>
+              </Pressable>
+            </View>
           </View>
         </Animated.View>
 
         <Animated.View style={[styles.grid, revealStyle(cardsReveal, 18)]}>
+          {!isAuthenticated ? (
+            <View style={styles.panel}>
+              <Text style={styles.panelLabel}>Потрібен вхід</Text>
+              <Text style={styles.panelText}>Увійдіть, щоб зберігати персональні налаштування й синхронізувати профіль у межах додатку.</Text>
+              <Pressable style={styles.panelButton} onPress={() => router.push('/auth' as Href)}>
+                <Text style={styles.panelButtonText}>Перейти до Auth</Text>
+              </Pressable>
+            </View>
+          ) : null}
           <View style={styles.statCard}>
             <Text style={styles.statNumber}>{PROFILE_DATA.visitedCities}</Text>
             <Text style={styles.statLabel}>відвіданих міст</Text>
@@ -99,6 +121,11 @@ export default function ProfileScreen() {
             <Pressable style={styles.panelButton} onPress={() => router.push('/collections')}>
               <Text style={styles.panelButtonText}>Оновити добірки</Text>
             </Pressable>
+            {isAuthenticated ? (
+              <Pressable style={styles.panelGhostButton} onPress={logout}>
+                <Text style={styles.panelGhostButtonText}>Вийти з акаунта</Text>
+              </Pressable>
+            ) : null}
           </View>
         </Animated.View>
       </ScrollView>
@@ -165,6 +192,25 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     textAlign: 'center',
+  },
+  quickActions: {
+    marginTop: 14,
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  quickActionButton: {
+    borderRadius: 14,
+    backgroundColor: UI.colors.accentSoft,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  quickActionButtonText: {
+    color: UI.colors.accent,
+    fontSize: 13,
+    fontWeight: '700',
   },
   grid: {
     gap: 14,
@@ -236,8 +282,21 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
   },
   panelButtonText: {
-    color: '#ffffff',
+    color: UI.colors.card,
     fontSize: 14,
+    fontWeight: '700',
+  },
+  panelGhostButton: {
+    marginTop: 2,
+    alignSelf: 'flex-start',
+    borderRadius: 16,
+    backgroundColor: UI.colors.accentSoft,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  panelGhostButtonText: {
+    color: UI.colors.accent,
+    fontSize: 13,
     fontWeight: '700',
   },
 });
